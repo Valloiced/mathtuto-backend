@@ -1,22 +1,17 @@
+/* Types */
+import FirebaseAuthService from '../services/firebase-auth';
+import FirestoreService from '../services/firebase-firestore';
+import StatusCode from '../ts/enums/statuscodes';
+import { UserSession } from '../ts/interfaces/user.interface';
+import { AuthControllers } from '../ts/interfaces/controller.interface';
 import { Request, Response } from 'express';
 
-/* Services */
-import FirebaseAuthService from 'v1/services/firebase-auth';
-
-/* Middlewares */
-import errorHandler from '../middlewares/error';
-
-/* Enums */
-import StatusCode from '../enums/statuscodes';
-
-/* Interfaces */
-import { UserSession } from 'v1/interfaces/user';
-
 /* Utils */
-import { AuthUtils } from '../utils';
+import { AuthUtils, ErrorUtils } from '../utils';
 const { isAuthenticated, filterUserSession } = AuthUtils;
+const { errorHandler } = ErrorUtils;
 
-export default (firebaseAuthService: FirebaseAuthService) => {
+export default (firebaseAuthService: FirebaseAuthService, firestoreService: FirestoreService) => {
 
     const handleCheckUser = (req: Request, res: Response) => {
         const user = firebaseAuthService.getCurrentUser();
@@ -34,7 +29,7 @@ export default (firebaseAuthService: FirebaseAuthService) => {
 
         return res.json({
             "message": "OK",
-            "authenticated": isAuthenticated(firebaseAuthService.auth),
+            "authenticated": isAuthenticated(firebaseAuthService.getAuth()),
             "data": data
         })
     }
@@ -42,7 +37,7 @@ export default (firebaseAuthService: FirebaseAuthService) => {
     const handleSignUp = async (req: Request, res: Response) => {
         const { email, password } = req.body;
         
-        if(isAuthenticated(firebaseAuthService.auth)) {
+        if(isAuthenticated(firebaseAuthService.getAuth())) {
             return res.status(StatusCode.OK).json({
                 message: "User already login",
                 data: filterUserSession(firebaseAuthService.getCurrentUser())
@@ -53,6 +48,13 @@ export default (firebaseAuthService: FirebaseAuthService) => {
             const userCredential = await firebaseAuthService.signUp(email, password);
             
             const user = userCredential.user;
+
+            await firestoreService.addDocument('users', {
+                uid: user.uid,
+                email: user.email,
+                metadata: { ...user.metadata },
+                points: 0
+            })
 
             res.status(StatusCode.OK).json({
                 "message": "OK",
@@ -77,7 +79,7 @@ export default (firebaseAuthService: FirebaseAuthService) => {
     const handleLogin = async (req: Request, res: Response) => {
         const { email, password } = req.body;
 
-        if(isAuthenticated(firebaseAuthService.auth)) {
+        if(isAuthenticated(firebaseAuthService.getAuth())) {
             return res.status(StatusCode.OK).json({
                 message: "User already login",
                 data: filterUserSession(firebaseAuthService.getCurrentUser())
@@ -133,10 +135,5 @@ export default (firebaseAuthService: FirebaseAuthService) => {
         }
     }
 
-    return {
-        handleCheckUser,
-        handleLogin,
-        handleSignUp,
-        handleSignOut
-    }
+    return { handleCheckUser, handleLogin, handleSignUp, handleSignOut } as AuthControllers
 }

@@ -6,4 +6,4 @@ const errorHandler = (message: string, status: number, error: any) => {
     }
 }
 
-export default errorHandler;
+export default { errorHandler };

@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 /* Middlewares */
 const error_1 = __importDefault(require("../middlewares/error"));
-/* Enums */
-const statuscodes_1 = __importDefault(require("../enums/statuscodes"));
+/* Types */
+const statuscodes_1 = __importDefault(require("../ts/enums/statuscodes"));
 /* Utils */
 const utils_1 = require("../utils");
 const { isAuthenticated, filterUserSession } = utils_1.AuthUtils;

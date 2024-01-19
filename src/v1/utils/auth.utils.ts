@@ -1,6 +1,7 @@
+/* Types */
 import { User, Auth } from "firebase/auth";
-import { UserSession } from "v1/interfaces/user";
-import { AuthUtils } from "v1/interfaces/utils";
+import { UserSession } from "../ts/interfaces/user.interface";
+import { AuthUtils } from "../ts/interfaces/utils.interface";
 
 const isAuthenticated = (auth: Auth) : boolean => {
     const user = auth.currentUser;

@@ -8,6 +8,9 @@ class FirebaseAuthService {
     getCurrentUser() {
         return this.auth.currentUser;
     }
+    getAuth() {
+        return this.auth;
+    }
     async signUp(email, password) {
         return (0, auth_1.createUserWithEmailAndPassword)(this.auth, email, password);
     }

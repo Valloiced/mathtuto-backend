@@ -1,4 +1,6 @@
 import Firebase from './firebase.config';
-import { Config } from 'v1/interfaces/config';
+
+/* Types */
+import { Config } from 'v1/ts/interfaces/config.interface';
 
 export default { Firebase } as Config;

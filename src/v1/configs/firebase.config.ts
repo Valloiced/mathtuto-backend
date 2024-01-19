@@ -1,31 +1,46 @@
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { FirebaseApp, initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 import { Analytics, getAnalytics } from "firebase/analytics";
-import { Firestore, getFirestore } from "firebase/firestore";
+import { Firestore } from "firebase/firestore";
 import { Auth, getAuth } from 'firebase/auth';
-import { FirebaseConfig } from "v1/interfaces/config";
 
-const { FIREBASE_API_KEY, FIREBASE_APP_ID } = process.env;
+/* types */
+import { FirebaseConfig } from "../ts/interfaces/config.interface";
 
-const firebaseConfig = {
-    apiKey: FIREBASE_API_KEY,
-    authDomain: "mathtuto-708ed.firebaseapp.com",
-    projectId: "mathtuto-708ed",
-    storageBucket: "mathtuto-708ed.appspot.com",
-    messagingSenderId: "464313574732",
-    appId: FIREBASE_APP_ID,
-    measurementId: "G-WL7TZDPF3J"
-};
 
-// Initialize Firebase
-const app: FirebaseApp = initializeApp(firebaseConfig);
-const db: Firestore = getFirestore(app);
-const auth: Auth = getAuth(app);
+const initializeFirebase = () => {
+    try {
 
-let analytics: Analytics | undefined;
-try {
-    analytics = getAnalytics(app);
-} catch(e) {
-    console.log("Can't connect analytics: ", e)
+        /* firebase env */
+        const { FIREBASE_API_KEY, FIREBASE_APP_ID } = process.env;
+        
+        const firebaseConfig = {
+            apiKey: FIREBASE_API_KEY,
+            appId: FIREBASE_APP_ID,
+            authDomain: "mathtuto-708ed.firebaseapp.com",
+            projectId: "mathtuto-708ed",
+            storageBucket: "mathtuto-708ed.appspot.com",
+            messagingSenderId: "464313574732",
+            measurementId: "G-WL7TZDPF3J"
+        };
+        
+        // Initialize Firebase
+        const firebase: FirebaseApp = initializeApp(firebaseConfig);
+        const db: Firestore = getFirestore(firebase);
+        const auth: Auth = getAuth(firebase);
+        
+        let analytics: Analytics | undefined;
+        // try {
+        //     analytics = getAnalytics(app);
+        // } catch(e) {
+        //     console.log("Can't connect analytics: ", e)
+        // }
+    
+        return { firebase, auth, db, analytics } as FirebaseConfig;
+    } catch(error: any) {
+        console.error("Failed to initialize Firebase", error);
+        throw new Error(error);
+    }
 }
 
-export default { auth, db, analytics } as FirebaseConfig;
+export default initializeFirebase;

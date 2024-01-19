@@ -1,10 +1,15 @@
+/* Types */
 import { Express } from "express"
-import { Config } from "v1/interfaces/config";
+import { Config } from "v1/ts/interfaces/config.interface";
 
-import Views from './views';
-import Auth from './auth';
+/* Routes */
+import Views from './views.route';
+import Auth from './auth.route';
+
+/* Env (Development purposes, callback at using 'api' if no endpoint provided) */
+const { ROOT_ENDPOINT  = "api" } = process.env;
 
 export default (app: Express, config: Config) => {
     Views(app);
-    Auth(app, config.Firebase);
+    Auth(ROOT_ENDPOINT, app, config.Firebase())
 }

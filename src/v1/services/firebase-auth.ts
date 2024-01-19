@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 
 class FirebaseAuthService {
-    public auth: Auth;
+    private auth: Auth;
 
     constructor(auth: Auth) {
         this.auth = auth;
@@ -15,6 +15,10 @@ class FirebaseAuthService {
 
     public getCurrentUser() {
         return this.auth.currentUser;
+    }
+
+    public getAuth() {
+        return this.auth;
     }
 
     public async signUp(email: string, password: string) : Promise<UserCredential> {
